@@ -1,0 +1,10 @@
+[Unit]
+Description=PiPlayer service
+
+[Service]
+User=root
+WorkingDirectory=/root/piplayer
+ExecStart=/root/.pyenv/shims/python piplayer.py
+
+[Install]
+WantedBy=multi-user.target

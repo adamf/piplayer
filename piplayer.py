@@ -1,19 +1,18 @@
 #!/usr/bin/env python
+import json
 from time import sleep
-from pynput import keyboard
 from glob import glob
 from just_playback import Playback
 import threading
 import time
-import os.path
-
+import keyboard
+import os
 
 
 # On OS X, install portaudio and pyaudio, or playback is pretty slow.
 # brew install ffmpeg portaudio && pip install pyaudio
 
-MUSIC_DIR = "./music/"
-
+MUSIC_DIR = "/home/music/music/"
 
 class PlayerTimer(threading.Timer):
     started_at = None
@@ -24,7 +23,6 @@ class PlayerTimer(threading.Timer):
         return time.time() - self.started_at
     def remaining(self):
         return self.interval - self.elapsed()
-
 
 class Player():
     playlist = []
@@ -46,7 +44,7 @@ class Player():
 
         to_remove = []
         for mp3_file in self.playlist:
-            if not os.path.exists(mp3_file): 
+            if not os.path.exists(mp3_file):
                 to_remove.append(mp3_file)
 
         for mp3_file in to_remove:
@@ -69,7 +67,6 @@ class Player():
         else:
             self.next_track()
 
-
     def next_track(self):
         print("next_track")
         mp3_file = self.playlist.pop(0)
@@ -82,40 +79,25 @@ class Player():
         self.timer = PlayerTimer(self.player.duration, self.next_track)
         self.timer.start()
         self.load_playlist()
-
-
-def on_press(key, player):
-    try:
-        if key.char == 'p':
-            if player.player.playing:
-                player.pause()
-                print("paused")
-            else:
-                print("playing")
-                player.play()
-        if key.char == 'n':
-            player.next_track()
-
-    except AttributeError as e:
-        print(e)
-        print('special key {0} pressed'.format(
-            key))
-
-def on_release(key):
-    print('{0} released'.format(
-        key))
-    if key == keyboard.Key.esc:
-        # Stop listener
-        return False
+    
+def on_release(key, player):
+    if key == 'play':
+        if player.player.playing:
+            player.pause()
+            print("paused")
+        else:
+            print("playing")
+            player.play()
+    if key == 'next' or not player.player.active:
+        player.next_track()
 
 
 player = Player(MUSIC_DIR)
 
-with keyboard.Listener(
-    on_press=lambda event: on_press(event, player),
-    on_release=on_release) as listener:
-    listener.join()
+keyboard.add_hotkey('a', on_release, args=['play', player])
+keyboard.add_hotkey('b', on_release, args=['next', player])
 
+keyboard.wait('esc')
 
 
 
