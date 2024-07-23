@@ -11,6 +11,7 @@ Do all this as root on a Pi 5 with headless raspberry pi debian:
 * Use python 3.12
 * `pip install just_playback keyboard`
 * edit `/etc/asound.conf` to set your default device (look with `aplay -l`)
-* Run
+* Copy the service file into /etc/systemd/<correct dir>
+* Enable & start the service
 
 
