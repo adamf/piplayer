@@ -1,14 +1,12 @@
 #!/usr/bin/env python
-import json
 from time import sleep
-from pydub import AudioSegment
-from pydub.playback import play
 from pynput import keyboard
 from glob import glob
 from just_playback import Playback
-from threading import Timer
 import threading
 import time
+import os.path
+
 
 
 # On OS X, install portaudio and pyaudio, or playback is pretty slow.
@@ -39,14 +37,20 @@ class Player():
         self.player = Playback()
         self.music_dir = music_dir
         self.load_playlist()
-        self.timer = PlayerTimer(100, self.next_track)
-        self.timer.start()
         self.track_time_remaining = 0
 
     def load_playlist(self):
         for mp3_file in sorted(glob(self.music_dir + "*.mp3")):
             if mp3_file not in self.playlist:
                 self.playlist.append(mp3_file)
+
+        to_remove = []
+        for mp3_file in self.playlist:
+            if not os.path.exists(mp3_file): 
+                to_remove.append(mp3_file)
+
+        for mp3_file in to_remove:
+            self.playlist.remove(mp3_file)
 
     def pause(self):
         print("pause", self.timer.remaining(), self.timer.elapsed())
