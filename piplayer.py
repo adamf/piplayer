@@ -8,10 +8,6 @@ import time
 import keyboard
 import os
 
-
-# On OS X, install portaudio and pyaudio, or playback is pretty slow.
-# brew install ffmpeg portaudio && pip install pyaudio
-
 MUSIC_DIR = "/home/music/music/"
 
 class PlayerTimer(threading.Timer):
