@@ -62,12 +62,16 @@ class Player():
 
     def play(self):
         logger.info("play")
-        if self.player.paused:
-            logger.info("play, but we are paused")
-            self.player.resume()
-            self.timer = PlayerTimer(self.track_time_remaining, self.next_track)
-            self.timer.start()
+        if self.player.active:
+            if self.player.paused:
+                logger.info("resuming playback")
+                self.player.resume()
+                self.timer = PlayerTimer(self.track_time_remaining, self.next_track)
+                self.timer.start()
+            else:
+                logger.info("already playing")
         else:
+            logger.info("no active track, starting from top of playlist")
             self.next_track()
 
     def next_track(self):
@@ -91,7 +95,7 @@ class Player():
         self.player.load_file(mp3_file)
         self.player.play()
         if self.timer:
-                self.timer.cancel()
+            self.timer.cancel()
         self.timer = PlayerTimer(self.player.duration, self.next_track)
         self.timer.start()
         self.load_playlist()
@@ -105,9 +109,9 @@ def on_release(key, player):
         else:
             print("playing")
             player.play()
-    if key == 'next' or not player.player.active:
+    elif key == 'next':
         player.next_track()
-    if key == 'previous' or not player.player.active:
+    elif key == 'previous':
         player.previous_track()
 
 
